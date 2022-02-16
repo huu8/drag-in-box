@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>盒子内部拖拽</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #out {
+            width: 300px;
+            height: 350px;
+            background-color: red;
+            margin: 50px auto;
+            position: relative;
+        }
+
+        #inner {
+            width: 50px;
+            height: 50px;
+            background-color: #000;
+            position: absolute;
+            left: 0;
+            top: 0;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="out">
+        <div id="inner"></div>
+    </div>
+    <script>
+        var out = document.getElementById('out');
+        var inner = document.getElementById('inner');
+        // 获取鼠标在页面的位置，处理浏览器兼容性
+        function getPage(e) {
+            var pageX = e.pageX || e.clientX + getScroll().scrollLeft;
+            var pageY = e.pageY || e.clientY + getScroll().scrollTop;
+            return {
+                pageX: pageX,
+                pageY: pageY
+            }
+        }
+        inner.onmousedown = function (e) {
+            e = e || window.event;
+            // 当鼠标按下的时候，求鼠标在盒子中的位置x,y
+            // 鼠标在盒子中的位置 = 鼠标在页面上的位置 - 盒子的位置
+            var x = getPage(e).pageX - inner.offsetLeft;
+            var y = getPage(e).pageY - inner.offsetTop;
+            // 鼠标在文档中移动
+            document.onmousemove = function (e) {
+                e = e || window.event;
+                // 当鼠标在页面上移动的时候。求盒子的坐标
+                // 盒子的坐标 = 鼠标当前在页面中的位置 - 鼠标在盒子中的位置
+                var boxX = getPage(e).pageX - x;
+                var boxY = getPage(e).pageY - y;
+                if (boxX < 0) {
+                    boxX = 0;
+                }
+                if (boxY < 0) {
+                    boxY = 0;
+                }
+                if (boxX > out.offsetWidth - inner.offsetWidth) {
+                    console.log(out.offsetWidth - inner.offsetWidth, 'ttt');
+                    boxX = out.offsetWidth - inner.offsetWidth;
+                }
+                if (boxY > out.offsetHeight - inner.offsetHeight) {
+                    console.log(out.offsetHeight - inner.offsetHeight, 'hhh');
+                    boxY = out.offsetHeight - inner.offsetHeight;
+                }
+                inner.style.left = boxX + 'px';
+                inner.style.top = boxY + 'px';
+            }
+        }
+        // 当鼠标弹起的时候，移除鼠标移动事件
+        document.onmouseup = function () {
+            document.onmousemove = null;
+        }
+    </script>
+</body>
+
+</html>
